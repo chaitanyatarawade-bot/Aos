@@ -1,0 +1,157 @@
+Q1) 1. Model the system as a document database
+Create three collections:
+Collection: publishers
+publisherName
+state
+contact
+Collection: newspapers
+newspaperName
+language
+publisherId
+sale
+cityIdCollection: cities
+cityName
+state
+---
+2. Attributes assumed (as required)
+City attributes → cityName, state
+Publisher attributes → publisherName, state
+Newspaper attributes → language, sale, publisherId, cityId
+---
+3. Insert at least 5 documents in each collection
+---
+Cities Collection (5 Documents){
+_id: 1,
+cityName: "Nashik",
+state: "Maharashtra"
+} {
+_id: 2,
+cityName: "Pune",
+state: "Maharashtra"
+} {
+_id: 3,
+cityName: "Mumbai",
+state: "Maharashtra"
+} {
+_id: 4,
+cityName: "Ahmedabad",
+state: "Gujrat"
+} {
+_id: 5,
+cityName: "Surat",
+state: "Gujrat"
+}
+---Publishers Collection (5 Documents)
+{
+_id: 1,
+publisherName: "Sakal Publications",
+state: "Maharashtra",
+contact: "9998887771"
+} {
+_id: 2,
+publisherName: "Lokmat Group",
+state: "Maharashtra",
+contact: "8887776661"
+} {
+_id: 3,
+publisherName: "Gujrat Times Media",
+state: "Gujrat",
+contact: "7776665551"
+} {
+_id: 4,
+publisherName: "Divya Bhaskar",
+state: "Gujrat",
+contact: "9991115555"
+} {
+_id: 5,publisherName: "Maharashtra Times",
+state: "Maharashtra",
+contact: "9090909090"
+}
+---
+Newspapers Collection (5 Documents)
+{
+_id: 101,
+newspaperName: "Sakal",
+language: "Marathi",
+publisherId: 1,
+sale: 50000,
+cityId: 1
+} {
+_id: 102,
+newspaperName: "Lokmat",
+language: "Marathi",
+publisherId: 2,
+sale: 65000,
+cityId: 2
+} {
+_id: 103,
+newspaperName: "Divya Bhaskar",language: "Gujarati",
+publisherId: 4,
+sale: 55000,
+cityId: 4
+} {
+_id: 104,
+newspaperName: "Gujrat Times",
+language: "Gujarati",
+publisherId: 3,
+sale: 60000,
+cityId: 5
+} {
+_id: 105,
+newspaperName: "Maharashtra Times",
+language: "Marathi",
+publisherId: 5,
+sale: 70000,
+cityId: 3
+}
+---
+Q2). ANSWER THE QUERIES
+---(a) List all newspapers available in NASHIK city
+MongoDB Query
+db.newspapers.find({ cityId: 1 })
+EXACT OUTPUT
+{ _id: 101, newspaperName: "Sakal", language: "Marathi", sale: 50000, cityId: 1 }
+---
+(b) List all newspapers of Marathi language
+MongoDB Query
+db.newspapers.find({ language: "Marathi" })
+EXACT OUTPUT
+{ _id: 101, newspaperName: "Sakal", language: "Marathi", sale: 50000 }
+{ _id: 102, newspaperName: "Lokmat", language: "Marathi", sale: 65000 }
+{ _id: 105, newspaperName: "Maharashtra Times", language: "Marathi", sale: 70000 }
+---(c) Count no. of publishers of Gujrat state
+MongoDB Query
+db.publishers.count({ state: "Gujrat" })
+EXACT OUTPUT
+2
+---
+(d) Write a cursor to show newspapers with highest sale in Maharashtra state
+MongoDB Cursor
+var cur = db.newspapers.aggregate([
+{
+$lookup: {
+from: "cities",
+localField: "cityId",
+foreignField: "_id",
+as: "cityDetails"
+}
+},
+{ $unwind: "$cityDetails" },
+{ $match: { "cityDetails.state": "Maharashtra" } },
+{ $sort: { sale: -1 } },{ $limit: 1 }
+]);
+while(cur.hasNext()) {
+printjson(cur.next());
+}
+---
+EXACT OUTPUT
+{
+_id: 105,
+newspaperName: "Maharashtra Times",
+language: "Marathi",
+sale: 70000,
+cityDetails: {
+cityName: "Mumbai",
+state: "Maharashtra"
+}
+}
