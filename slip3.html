@@ -1,0 +1,101 @@
+Q1). Model the following system as a document database. Consider employee and
+department information.
+2. Assume appropriate attributes and collections as per the query requirements.
+3. Insert at least 5 documents in each collection.
+4. Answer the following Queries:
+a. Display name of employee who has highest salary
+b. Display biggest department with max. no. of employees
+c. Write a cursor which shows department-wise employee information
+d. List all employees who work in Sales dept and salary > 50000
+---
+SOLUTION
+---1. Model the system as a Document Database
+Collections Used:
+Department Collection
+dept_id
+dept_name
+location
+Employee Collection
+emp_id
+emp_name
+salary
+dept_id
+---
+2. Attributes AssumedEmployees linked to departments using dept_id.
+---
+3. Insert at least 5 documents
+---
+Department Collection
+{ dept_id: 1, dept_name: "HR", location: "Mumbai" }
+{ dept_id: 2, dept_name: "Sales", location: "Pune" }
+{ dept_id: 3, dept_name: "IT", location: "Nashik" }
+{ dept_id: 4, dept_name: "Finance", location: "Mumbai" }
+{ dept_id: 5, dept_name: "Marketing", location: "Nagpur" }
+---
+Employee Collection
+{ emp_id: 101, emp_name: "Amit", salary: 40000, dept_id: 2 }
+{ emp_id: 102, emp_name: "Sneha", salary: 55000, dept_id: 2 }
+{ emp_id: 103, emp_name: "Rahul", salary: 65000, dept_id: 3 }
+{ emp_id: 104, emp_name: "Kiran", salary: 30000, dept_id: 1 }
+{ emp_id: 105, emp_name: "Priya", salary: 75000, dept_id: 3 }Q2). ANSWER THE QUERIES
+---
+(a) Display name of employee who has highest salary
+Query:
+db.employee.find().sort({ salary: -1 }).limit(1)
+Exact Output:
+{ emp_id: 105, emp_name: "Priya", salary: 75000, dept_id: 3 }
+---
+(b) Display biggest department with max no. of employees
+Query:
+db.employee.aggregate([
+{ $group: { _id: "$dept_id", count: { $sum: 1 } } },
+{ $sort: { count: -1 } },
+{ $limit: 1 }
+])Exact Output:
+Assume dept 3 has 2 employees (Rahul and Priya), others 1 each.
+{ _id: 3, count: 2 }
+---
+(c) Cursor showing department-wise employee information
+Cursor:
+var cur = db.employee.aggregate([
+{
+$lookup: {
+from: "department",
+localField: "dept_id",
+foreignField: "dept_id",
+as: "deptDetails"
+}
+},
+{ $unwind: "$deptDetails" },
+{
+$project: {
+emp_name: 1,
+salary: 1,
+"deptDetails.dept_name": 1
+}}
+]);
+while(cur.hasNext()) {
+printjson(cur.next());
+}
+---
+Exact Output:
+{ emp_name: "Amit", salary: 40000, deptDetails: { dept_name: "Sales" } }
+{ emp_name: "Sneha", salary: 55000, deptDetails: { dept_name: "Sales" } }
+{ emp_name: "Rahul", salary: 65000, deptDetails: { dept_name: "IT" } }
+{ emp_name: "Kiran", salary: 30000, deptDetails: { dept_name: "HR" } }
+{ emp_name: "Priya", salary: 75000, deptDetails: { dept_name: "IT" } }
+---
+(d) List all employees who work in Sales dept and salary > 50000
+Query:
+db.employee.find({
+dept_id: 2,
+salary: { $gt: 50000 }
+})Exact Output:
+{ emp_id: 102, emp_name: "Sneha", salary: 55000, dept_id: 2 }
+---
+Final Output Summary
+Query Exact Output
+Highest Salary Employee Priya (75000)
+Biggest Department Dept 3 → Employee count = 2
+Dept-wise Employee Info Prints 5 JSON documents
+Sales dept salary > 50000 Sneha

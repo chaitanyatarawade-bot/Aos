@@ -1,0 +1,90 @@
+Q.1] Model the following information system as a document database.
+Consider hospitals around Nashik.
+Each hospital may have one or more specializations like Pediatric, Gynaec, Orthopedic, etc.
+A person can recommend/provide review for a hospital.
+A doctor can give service to one or more hospitals.
+Assume appropriate attributes and collections.
+Insert at least 2 documents in each collection
+=> Collection 1: hospitals
+{
+"_id": 1,
+"name": "Nashik Care Hospital",
+"city": "Nashik",
+"specializations": ["Pediatric", "Orthopedic", "Gynaec"],
+"doctors": [101]
+}
+---
+Collection 2: doctors
+{
+"_id": 101,"name": "Dr. Aakash Patil",
+"specializations": ["Pediatric", "Orthopedic"],
+"hospital_ids": [1]
+}
+---
+Collection 3: reviews
+{
+"_id": 501,
+"person_name": "Rohit Shinde",
+"rating": 4.5,
+"review": "Very good treatment and cooperative staff.",
+"hospital_id": 1
+} Q
+2). Assume appropriate attributes and collections as per the query requirements
+=>
+1. Hospitals Collection
+Attributes:
+_id : unique hospital IDname : hospital name
+city : hospital city
+specializations : list of specializations
+doctors : list of doctor IDs
+---
+2. Doctors Collection
+Attributes:
+_id : doctor ID
+name : doctor name
+specializations : list of expertise
+hospital_ids : list of hospitals where doctor provides service
+---3. Reviews Collection
+Attributes:
+_id : review ID
+person_name : reviewer
+rating : rating
+review : feedback text
+hospital_id : which hospital is reviewed
+3. List the names of hospitals with Orthopedic specialization
+=>
+Query:
+db.hospitals.find(
+{ specializations: "Orthopedic" },
+{ hospital_name: 1, _id: 0 }
+)
+Output:
+City HospitalSunrise Hospital
+Lotus Hospital
+4]List the names of all hospitals located in Nashik
+=>
+db.hospitals.find(
+{ city: "Nashik" },
+{ hospital_name: 1, _id: 0 }
+)
+Output:
+City Hospital
+Sunrise Hospital
+MediCare Hospital
+5]List the names of hospitals where Dr. Deshmukh visits
+=>
+db.hospitals.find(
+{ doctor_ids: 103 },
+{ hospital_name: 1, _id: 0 }
+)
+Output:
+Sunrise Hospital6] List the names of hospitals whose rating >= 4
+=>
+db.hospitals.find(
+{ hospital_id: { $in: [1, 2, 3, 5, 6, 7, 9, 10] } },
+{ hospital_name: 1, _id: 0 }
+)
+Output:
+City Hospital
+Sunrise Hospital
+Apollo Clinic
