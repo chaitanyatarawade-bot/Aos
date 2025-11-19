@@ -1,0 +1,211 @@
+Q.1] Write the HTML5 code for generating the form as shown below. Apply the internal CSS to the
+following form to change the font size of the heading to 6pt and change the color to red and also
+change the background color to yellow.
+=>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Form Example</title>
+<style>
+h1 {
+font-size: 6pt;
+color: red;
+}
+body {
+background-color: yellow;
+}
+</style>
+</head>
+<body>
+<h1>Registration Form</h1>
+<form>
+<label>Name:</label>
+<input type="text" name="name"><br><br><label>Email:</label>
+<input type="email" name="email"><br><br>
+<label>Password:</label>
+<input type="password" name="password"><br><br>
+<input type="submit" value="Submit">
+</form>
+</body>
+</html>
+------------------------------------------
+| (Yellow Background) |
+| |
+| Registration Form ← (6pt, red) |
+| |
+| Name: [] |
+| |
+| Email: [] |
+| |
+| Password: [] |
+| |
+| [ Submit ] |
+------------------------------------------1. Model the following Property system as a document database
+We will use two collections:
+Collection 1: Owners
+{
+_id: 1,
+ownerName: "Mr.Patil",
+contact: "9876543210"
+}
+Collection 2: Properties
+{
+_id: 101,
+area: "Nashik",
+rate: 95000,
+ownerId: 1
+}
+One owner can have many properties → ownerId is used to link.
+_-------------
+2. Assume appropriate attributes and collections
+Owner attributes
+ownerNamecontact
+email
+Property attributes
+area
+rate
+size
+ownerId
+-----------
+3. Insert at least 05 documents in each collection
+---
+Owners Collection (5 Documents)
+{
+_id: 1,
+ownerName: "Mr.Patil",
+contact: "9876543210",email: "patil@gmail.com"
+} {
+_id: 2,
+ownerName: "Mr.Shinde",
+contact: "9876500000",
+email: "shinde@gmail.com"
+} {
+_id: 3,
+ownerName: "Mr.Kulkarni",
+contact: "9876512345",
+email: "kulkarni@gmail.com"
+} {
+_id: 4,
+ownerName: "Mrs.Jadhav",
+contact: "9876523456",
+email: "jadhav@gmail.com"
+} {
+_id: 5,
+ownerName: "Mr.Desai",
+contact: "9876534567",
+email: "desai@gmail.com"
+}
+---
+Properties Collection (5 Documents){
+_id: 101,
+area: "Nashik",
+rate: 95000,
+size: "800 sqft",
+ownerId: 1
+} {
+_id: 102,
+area: "Pune",
+rate: 150000,
+size: "1200 sqft",
+ownerId: 1
+} {
+_id: 103,
+area: "Mumbai",
+rate: 300000,
+size: "1000 sqft",
+ownerId: 2
+} {
+_id: 104,
+area: "Nashik",
+rate: 80000,
+size: "600 sqft",
+ownerId: 3
+} {
+_id: 105,area: "Aurangabad",
+rate: 70000,
+size: "500 sqft",
+ownerId: 4
+}
+-----------------
+Q.2) 4. ANSWER THE QUERIES
+---
+(a) Display area-wise property details
+MongoDB Query:
+db.properties.aggregate([
+{ $group: { _id: "$area", properties: { $push: "$$ROOT" } } }
+])
+OUTPUT:
+{
+_id: "Nashik",
+properties: [
+{ _id: 101, rate: 95000, size: "800 sqft", ownerId: 1 },
+{ _id: 104, rate: 80000, size: "600 sqft", ownerId: 3 }
+]
+}{
+_id: "Pune",
+properties: [
+{ _id: 102, rate: 150000, size: "1200 sqft", ownerId: 1 }
+]
+} {
+_id: "Mumbai",
+properties: [
+{ _id: 103, rate: 300000, size: "1000 sqft", ownerId: 2 }
+]
+} {
+_id: "Aurangabad",
+properties: [
+{ _id: 105, rate: 70000, size: "500 sqft", ownerId: 4 }
+]
+} -
+_-----------
+(b) Display property owned by 'Mr.Patil' having minimum rate
+Step 1: Find ownerId
+OwnerId = 1
+MongoDB Query
+db.properties.find({ ownerId: 1 }).sort({ rate: 1 }).limit(1)OUTPUT
+{
+_id: 101,
+area: "Nashik",
+rate: 95000,
+size: "800 sqft",
+ownerId: 1
+}
+---
+(c) Give the details of owner whose property is at “Nashik”
+MongoDB Query:
+db.properties.aggregate([
+{ $match: { area: "Nashik" } },
+{
+$lookup: {
+from: "owners",
+localField: "ownerId",
+foreignField: "_id",
+as: "ownerDetails"
+}
+}
+])
+OUTPUT:{
+_id: 101,
+area: "Nashik",
+rate: 95000,
+ownerDetails: [
+{ _id: 1, ownerName: "Mr.Patil", contact: "9876543210" }
+]
+} {
+_id: 104,
+area: "Nashik",
+rate: 80000,
+ownerDetails: [
+{ _id: 3, ownerName: "Mr.Kulkarni", contact: "9876512345" }
+]
+}
+---
+(d) Display area of property whose rate is less than 100000
+MongoDB Query:
+db.properties.find(
+{ rate: { $lt: 100000 } },
+{ area: 1, rate: 1, _id: 0 }
+)
+OUTPUT:{ area: "Nashik", rate: 95000 }
+{ area: "Nashik", rate: 80000 }
+{ area: "Aurangabad", rate: 70000 }
