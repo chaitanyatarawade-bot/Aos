@@ -1,0 +1,109 @@
+slip 15
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang=”en”>
+<head>
+    <meta charset=”UTF-8”>
+    <meta name=”viewport” content=”width=device-width, initial-scale=1.0”>
+    <title>Registration Form</title>
+    <link rel=”stylesheet” href=https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css>
+</head>
+<body>
+    <div class=”container”>
+        <div class=”row”>
+            <div class=”col-md-6 offset-md-3”>
+                <h4>Registration Form</h4>
+                <form>
+                    <div class=”form-group”>
+                        <label for=”firstname”>First Name</label>
+                        <input type=”text” class=”form-control” id=”firstname” required>
+                    </div>
+                    <div class=”form-group”>
+                        <label for=”lastname”>Last Name</label>
+                        <input type=”text” class=”form-control” id=”lastname” required>
+                    </div>
+                    <div class=”form-group”>
+                        <label for=”department”>Department / Office</label>
+                        <select class=”form-control” id=”department” required>
+                            <option>IT</option>
+                            <option>Sales</option>
+                            <option>HR</option>
+                            <option>Marketing</option>
+                        </select>
+                    </div>
+                    <div class=”form-group”>
+                        <label for=”username”>Username</label>
+                        <input type=”text” class=”form-control” id=”username” required>
+                    </div>
+                    <div class=”form-group”>
+                        <label for=”password”>Password</label>
+                        <input type=”password” class=”form-control” id=”password” required>
+                    </div>
+                    <div class=”form-group”>
+                        <label for=”confirm-password”>Confirm Password</label>
+                        <input type=”password” class=”form-control” id=”confirm-password” required>
+                    </div>
+                    <div class=”form-group”>
+                        <label for=”email”>E-Mail</label>
+                        <input type=”email” class=”form-control” id=”email” required>
+                    </div>
+                    <div class=”form-group”>
+                        <label for=”contact”>Contact No.</label>
+                        <input type=”text” class=”form-control” id=”contact” required>
+                    </div>
+                    <button type=”submit” class=”btn btn-primary”>Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src=https://code.jquery.com/jquery-3.5.1.slim.min.js></script>
+    <script src=https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js></script>
+    <script src=https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js></script>
+</body>
+</html>
+
+=>Labels and Relationships
+Labels:
+Movie → Properties: title, genre, year, business
+Actor → Properties: name, dob, role
+Relationships:
+(:Actor)-[:ACTED_IN]->(:Movie) → Properties: role
+High-level Graph Model:
+(Actor)-[:ACTED_IN {role}]->(Movie)
+---
+Create Nodes and Relationships
+// Movies
+CREATE (m1:Movie {title:"Movie1", genre:"Action", year:2024, business:1000000}),
+(m2:Movie {title:"Movie2", genre:"Drama", year:2023, business:1500000}),
+(m3:Movie {title:"Movie3", genre:"Romance", year:2025, business:900000})
+// ActorsCREATE (a1:Actor {name:"Shahrukh Khan", dob:"1965-11-02"}),
+(a2:Actor {name:"Amitabh Bachchan", dob:"1942-10-11"}),
+(a3:Actor {name:"Deepika Padukone", dob:"1986-01-05"})
+// Relationships
+CREATE (a1)-[:ACTED_IN {role:"Hero"}]->(m1),
+(a1)-[:ACTED_IN {role:"Hero"}]->(m2),
+(a2)-[:ACTED_IN {role:"Supporting"}]->(m2),
+(a3)-[:ACTED_IN {role:"Heroine"}]->(m3)
+---
+Queries
+a) Find movie which made highest business
+MATCH (m:Movie)
+RETURN m.title, m.business
+ORDER BY m.business DESC
+LIMIT 1
+Output:
+"Movie2", 1500000
+---b) Display details of movie along with actors
+MATCH (a:Actor)-[:ACTED_IN]->(m:Movie)
+RETURN m.title, m.genre, m.year, m.business, collect(a.name) AS actors
+Output (example):
+"Movie1", "Action", 2024, 1000000, ["Shahrukh Khan"]
+"Movie2", "Drama", 2023, 1500000, ["Shahrukh Khan","Amitabh Bachchan"]
+"Movie3", "Romance", 2025, 900000, ["Deepika Padukone"]
+---
+c) List all movies of “Shahrukh Khan”
+MATCH (:Actor {name:"Shahrukh Khan"})-[:ACTED_IN]->(m:Movie)
+RETURN m.title
+Output:
+"Movie1"
+"Movie2"

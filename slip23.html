@@ -1,0 +1,151 @@
+---------------------------------------------------------------------------  
+slip 23
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Display with Rotation</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        #imageContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .imageTile {
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            margin: 5px;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head> 
+<body> 
+    <div id="imageContainer">
+        <!-- Replace "https://via.placeholder.com/150" with the actual URL or path of your image -->
+        <div class="imageTile">
+            <img src="https://via.placeholder.com/150" alt="Image Tile 1" id="imageTile1">
+        </div>
+        <div class="imageTile">
+            <img src="https://via.placeholder.com/150" alt="Image Tile 2" id="imageTile2">
+        </div>
+        <div class="imageTile">
+            <img src="https://via.placeholder.com/150" alt="Image Tile 3" id="imageTile3">
+        </div>
+        <!-- Add more image tiles as needed -->
+    </div>
+    <button onclick="rotateClockwise()">Rotate Clockwise</button>
+    <button onclick="rotateAntiClockwise()">Rotate Anti-clockwise</button>
+    <script>
+        let currentRotation = 0;
+        function rotateClockwise() {
+            currentRotation += 90;
+            rotateImage("imageContainer", currentRotation);
+        }
+        function rotateAntiClockwise() {
+            currentRotation -= 90;
+            rotateImage("imageContainer", currentRotation);
+        }
+        function rotateImage(containerId, angle) {
+            const container = document.getElementById(containerId);
+            const imageTiles = container.querySelectorAll('.imageTile img');
+            imageTiles.forEach(img => {
+                img.style.transform = `rotate(${angle}deg)`;
+            });
+        }
+    </script>
+</body> 
+</html>
+
+
+=>
+Labels and Relationships
+Labels:
+Car → model, brand
+Section → name
+Staff → name
+Customer → name, city
+Relationships:(:Section)-[:HAS_CAR]->(:Car)
+(:Staff)-[:HANDLES]->(:Section)
+(:Customer)-[:ENQUIRED]->(:Car)
+(:Customer)-[:PURCHASED]->(:Car)
+Graph Model:
+(Staff)-[:HANDLES]->(Section)-[:HAS_CAR]->(Car)
+(Customer)-[:ENQUIRED]->(Car)
+(Customer)-[:PURCHASED]->(Car)
+---
+Create Nodes and Relationships
+// Cars
+CREATE (c1:Car {model:"Honda City"}),
+(c2:Car {model:"Skoda"}),
+(c3:Car {model:"Creta"}),
+(c4:Car {model:"Swift"})
+// Sections
+CREATE (s1:Section {name:"City Section"}),(s2:Section {name:"Skoda Section"})
+// Staff
+CREATE (st1:Staff {name:"Mr. Narayan"}),
+(st2:Staff {name:"Ms. Priya"})
+// Customers
+CREATE (cu1:Customer {name:"Ravi"}),
+(cu2:Customer {name:"Sita"})
+// Relationships
+CREATE (s1)-[:HAS_CAR]->(c1),
+(s2)-[:HAS_CAR]->(c2)
+CREATE (st1)-[:HANDLES]->(s1),
+(st1)-[:HANDLES]->(s2)
+CREATE (cu1)-[:ENQUIRED]->(c1),
+(cu1)-[:PURCHASED]->(c1),
+(cu2)-[:ENQUIRED]->(c2)
+---
+Queries
+a) List types of cars available
+MATCH (c:Car)RETURN c.model
+Output:
+"Honda City"
+"Skoda"
+"Creta"
+"Swift"
+---
+b) List sections handled by Mr. Narayan
+MATCH (st:Staff {name:"Mr. Narayan"})-[:HANDLES]->(sec:Section)
+RETURN sec.name
+Output:
+"City Section"
+"Skoda Section"
+---
+c) List customers who only enquired but did not purchase
+MATCH (cu:Customer)-[:ENQUIRED]->(c:Car)
+WHERE NOT (cu)-[:PURCHASED]->(:Car)RETURN cu.name
+Output:
+"Sita"
+---
+d) List the highly sold car model
+MATCH (c:Car)<-[:PURCHASED]-(cu:Customer)
+RETURN c.model, COUNT(cu) AS sales
+ORDER BY sales DESC
+LIMIT 1
+Output:
+"Honda City" 1

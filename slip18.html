@@ -1,0 +1,105 @@
+slip18
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Transformation Example</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        img {
+            transform-origin: center center;
+            transition: transform 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <img id="transformImage" src="https://picsum.photos/200" alt="Transformed Image" width="200">
+    <script>
+        const transformImage = document.getElementById('transformImage');
+        // Apply combined transformations after 1 second
+        setTimeout(() => {
+            transformImage.style.transform = 'rotate(45deg) scale(1.5) translate(50px, 50px)';
+        }, 1000);
+    </script>
+</body>
+</html>
+
+
+d. List all the who visits more than 2 hospitals [4]
+=>
+Labels and Relationships
+Labels:
+Doctor → name, specialization
+Hospital → name, area
+Clinic → name, area
+Person → name, city
+Relationships:
+(:Doctor)-[:VISITS]->(:Hospital)
+(:Doctor)-[:OWNS]->(:Clinic)
+(:Person)-[:REVIEWED {rating}]->(:Doctor)
+(:Person)-[:RECOMMENDED]->(:Doctor)
+Graph Model:(Doctor)-[:VISITS]->(Hospital)
+(Doctor)-[:OWNS]->(Clinic)
+(Person)-[:REVIEWED]->(Doctor)
+(Person)-[:RECOMMENDED]->(Doctor)
+---
+Create Nodes and Relationships
+// Doctors
+CREATE (d1:Doctor {name:"Dr. A", specialization:"Pediatrics"}),
+(d2:Doctor {name:"Dr. B", specialization:"Orthopedic"}),
+(d3:Doctor {name:"Dr. C", specialization:"Heart Specialist"})
+// Hospitals
+CREATE (h1:Hospital {name:"Seren Medows", area:"Pune"}),
+(h2:Hospital {name:"City Hospital", area:"Pune"}),
+(h3:Hospital {name:"Green Care", area:"Pune"})
+// Clinics
+CREATE (c1:Clinic {name:"Dr. A Clinic", area:"Pune"})
+// Persons
+CREATE (p1:Person {name:"Ravi"}),
+(p2:Person {name:"Simran"})
+// RelationshipsCREATE (d1)-[:VISITS]->(h1),
+(d1)-[:VISITS]->(h2),
+(d1)-[:VISITS]->(h3),
+(d2)-[:VISITS]->(h2),
+(d3)-[:OWNS]->(c1)
+CREATE (p1)-[:RECOMMENDED]->(d1),
+(p2)-[:REVIEWED {rating:5}]->(d1)
+---
+Queries
+a) List Orthopedic doctors in Pune
+MATCH (d:Doctor)-[:VISITS]->(h:Hospital {area:"Pune"})
+WHERE d.specialization="Orthopedic"
+RETURN d.name
+Output:
+"Dr. B"
+---
+b) List doctors with specialization “Pediatrics”MATCH (d:Doctor)
+WHERE d.specialization="Pediatrics"
+RETURN d.name
+Output:
+"Dr. A"
+---
+c) Most recommended Pediatrics in Seren Medows
+MATCH (p:Person)-[:RECOMMENDED]->(d:Doctor)-[:VISITS]->(h:Hospital {name:"Seren
+Medows"})
+WHERE d.specialization="Pediatrics"
+RETURN d.name, count(p) AS recommendations
+ORDER BY recommendations DESC
+LIMIT 1
+Output:
+"Dr. A", 1
+---
+d) List all doctors who visit more than 2 hospitals
+MATCH (d:Doctor)-[:VISITS]->(h:Hospital)WITH d, count(h) AS hosp_count
+WHERE hosp_count > 2
+RETURN d.name
+Output:
+"Dr.

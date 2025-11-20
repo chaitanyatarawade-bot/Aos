@@ -1,0 +1,107 @@
+slip 17
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box Example</title>
+    <style>
+        .box {
+            border: 2px solid #000;
+            padding: 10px;
+            background-color: yellow;
+            width: 300px;
+        }
+        .box div {
+            margin: 5px 0;
+            background-color: yellow;
+            padding: 5px;
+            border: 2px solid #000;
+        }
+        .Outerbox {
+            width: 400px;
+            height: 200px;
+            display: flex;
+            border: 2px solid #000;
+            background-color: orange;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="Outerbox">
+        <div class="box">
+            <div>M.Sc Computer Science</div>
+            <div>Academic Year 2023-24</div>
+        </div>
+        <div>
+</body>
+</html>
+
+=>
+Labels and Relationships
+Labels:
+Author → name, dob
+Book → title, genre
+Publisher → name, location
+Reader → name, city
+Relationships:
+(:Author)-[:WROTE]->(:Book)
+(:Book)-[:PUBLISHED_BY]->(:Publisher)
+(:Reader)-[:READ]->(:Book)
+(:Reader)-[:RATED {stars}]->(:Book)
+(:Reader)-[:RECOMMENDED]->(:Reader)Graph Model:
+(Author)-[:WROTE]->(Book)-[:PUBLISHED_BY]->(Publisher)
+(Reader)-[:READ]->(Book)
+(Reader)-[:RATED {stars}]->(Book)
+(Reader)-[:RECOMMENDED]->(Reader)
+---
+Create Nodes and Relationships
+// Authors
+CREATE (a1:Author {name:"John Doe"}),
+(a2:Author {name:"Alice Smith"})
+// Books
+CREATE (b1:Book {title:"Comics Adventures", genre:"Comics"}),
+(b2:Book {title:"Science 101", genre:"Science"})
+// Publishers
+CREATE (p1:Publisher {name:"Sage", location:"Delhi"}),
+(p2:Publisher {name:"Nova", location:"Mumbai"})
+// Readers
+CREATE (r1:Reader {name:"Ravi", city:"Pune"}),
+(r2:Reader {name:"Sara", city:"Nashik"})
+// RelationshipsCREATE (a1)-[:WROTE]->(b1),
+(a2)-[:WROTE]->(b2)
+CREATE (b1)-[:PUBLISHED_BY]->(p1),
+(b2)-[:PUBLISHED_BY]->(p2)
+CREATE (r1)-[:READ]->(b1),
+(r2)-[:READ]->(b2)
+CREATE (r1)-[:RATED {stars:4}]->(b1),
+(r2)-[:RATED {stars:2}]->(b2)
+CREATE (r1)-[:RECOMMENDED]->(r2)
+---
+Queries
+a) List authors who wrote “Comics”
+MATCH (a:Author)-[:WROTE]->(b:Book {genre:"Comics"})
+RETURN a.name
+Output:
+"John Doe"---
+b) Count readers of a book published by “Sage”
+MATCH (r:Reader)-[:READ]->(b:Book)-[:PUBLISHED_BY]->(p:Publisher {name:"Sage"})
+RETURN count(r) AS no_of_readers
+Output:
+1
+---
+c) List all publishers whose name starts with “N”
+MATCH (p:Publisher)
+WHERE p.name STARTS WITH "N"
+RETURN p.name
+Output:
+"Nova"
+---
+d) List names of people who have given rating >=3 for a bookMATCH (r:Reader)-[ra:RATED]->(b:Book)
+WHERE ra.stars >= 3
+RETURN r.name, b.title
+Output:
+"Ravi", "Comics Adventures"

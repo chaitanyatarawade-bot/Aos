@@ -1,0 +1,167 @@
+slip 21
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="reset"] {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .required {
+            color: red;
+        }
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border: 1px solid #4e7dcb;
+            border-radius: 4px;
+            display: none;
+        }
+        input:required {
+            border: 2px solid red;
+        }
+    </style>
+</head>
+<body>
+    <form id="registrationForm">
+        <label for="firstName">First Name<span class="required">*</span>:</label>
+        <input type="text" id="firstName" name="firstName" required>
+        <label for="lastName">Last Name<span class="required">*</span>:</label>
+        <input type="text" id="lastName" name="lastName" required>
+        <label for="email">Email<span class="required">*</span>:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="password">Password<span class="required">*</span>:</label>
+        <input type="password" id="password" name="password" required>
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset">
+        <div class="message" id="successMessage">Registration Successful!</div>
+        <div class="message" id="errorMessage">Error submitting the form. Please try again.</div>
+    </form>
+    <script>
+        const registrationForm = document.getElementById('registrationForm');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        registrationForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+            // You can add code here to handle the form submission, e.g., sending data to a server
+            // For demonstration purposes, show a success message
+            successMessage.style.display = 'block';
+            // Clear the form after a delay (in a real scenario, this may be replaced with appropriate logic)
+            setTimeout(() => {
+                registrationForm.reset();
+                successMessage.style.display = 'none';
+            }, 3000);
+        });
+        registrationForm.addEventListener('reset', function () {
+            // Reset the success message on form reset
+            successMessage.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
+
+
+=>
+Labels and Relationships
+Labels:
+Medicine → name, brand
+Product → type (Tablet, Syrup, Powder)
+State → name
+Relationships:
+(:Medicine)-[:HAS_PRODUCT]->(:Product)
+(:Medicine)-[:USED_IN {percentage}]->(:State)
+Graph Model:
+(Medicine)-[:HAS_PRODUCT]->(Product)
+(Medicine)-[:USED_IN {percentage}]->(State)---
+Create Nodes and Relationships
+// Medicines
+CREATE (m1:Medicine {name:"Paracetamol", brand:"Cipla"}),
+(m2:Medicine {name:"Amoxicillin", brand:"Dr. Reddy"}),
+(m3:Medicine {name:"Vitamin C", brand:"SunPharma"})
+// Products
+CREATE (p1:Product {type:"Tablet"}),
+(p2:Product {type:"Syrup"}),
+(p3:Product {type:"Powder"})
+// States
+CREATE (s1:State {name:"Rajasthan"}),
+(s2:State {name:"Gujarat"})
+// Relationships
+CREATE (m1)-[:HAS_PRODUCT]->(p1),
+(m1)-[:USED_IN {percentage:95}]->(s1),
+(m1)-[:USED_IN {percentage:80}]->(s2)
+CREATE (m2)-[:HAS_PRODUCT]->(p2),
+(m2)-[:USED_IN {percentage:92}]->(s1)
+CREATE (m3)-[:HAS_PRODUCT]->(p3),(m3)-[:USED_IN {percentage:88}]->(s2)
+---
+Queries
+a) List names of all medicines
+MATCH (m:Medicine)
+RETURN m.name
+Output:
+"Paracetamol"
+"Amoxicillin"
+"Vitamin C"
+---
+b) List medicines highly used in Rajasthan (>=90%)
+MATCH (m:Medicine)-[u:USED_IN]->(s:State {name:"Rajasthan"})
+WHERE u.percentage >= 90
+RETURN m.name
+Output:"Paracetamol"
+"Amoxicillin"
+---
+c) List highly used tablets in Gujarat
+MATCH (m:Medicine)-[:HAS_PRODUCT]->(p:Product {type:"Tablet"})-[:USED_IN]->(s:State
+{name:"Gujarat"})
+RETURN m.name
+Output:
+"Paracetamol"
+---
+d) List medicine names manufacturing "Powder"
+MATCH (m:Medicine)-[:HAS_PRODUCT]->(p:Product {type:"Powder"})
+RETURN m.name
+Output:
+"Vitamin C
