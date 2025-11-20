@@ -1,0 +1,94 @@
+slip 10
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Transition Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: #fff;
+            border-radius: 4px;
+            transition-property: background-color, color;
+            transition-duration: 0.6s;
+            transition-delay: 0.1s;
+        }
+        button:hover {
+            background-color: #fe3618;
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <button>Hover Me</button>
+</body>
+</html>
+
+
+1. Insert 5 documents in the Products collection:
+db.products.insertMany([
+{ _id: 1, name: "Smartphone", brand_id: 1, warranty_period: 1, rating: 4.5 },
+{ _id: 2, name: "Laptop", brand_id: 2, warranty_period: 2, rating: 4.7 },
+{ _id: 3, name: "Headphones", brand_id: 3, warranty_period: 1, rating: 4.2 },
+{ _id: 4, name: "Smartwatch", brand_id: 1, warranty_period: 1, rating: 4.8 },
+{ _id: 5, name: "Tablet", brand_id: 2, warranty_period: 1, rating: 4.1 }
+]);
+2. Insert 5 documents in the Brands collection:
+db.brands.insertMany([
+{ _id: 1, name: "TechBrand A", average_rating: 4.7 },
+{ _id: 2, name: "TechBrand B", average_rating: 4.5 },
+{ _id: 3, name: "AudioBrand C", average_rating: 4.2 },
+{ _id: 4, name: "GadgetBrand D", average_rating: 4.6 },
+{ _
+id: 5, name: "WearableBrand E", average_rating: 4.9 }
+]);
+3. Insert 5 documents in the Customers collection:
+db.customers.insertMany([
+{ _id: 1, name: "John Doe", city: "Pune", purchases: [{ product_id: 1, purchase_date: new Date("2023-
+08-15"), bill_amount: 45000 }] },
+{ _id: 2, name: "Jane Smith", city: "Mumbai", purchases: [{ product_id: 2, purchase_date: new
+Date("2023-07-20"), bill_amount: 75000 }] },
+{ _id: 3, name: "David Brown", city: "Nashik", purchases: [{ product_id: 3, purchase_date: new
+Date("2023-08-15"), bill_amount: 15000 }] },
+{ _id: 4, name: "Emily Davis", city: "Pune", purchases: [{ product_id: 4, purchase_date: new
+Date("2023-06-15"), bill_amount: 25000 }] },
+{ _id: 5, name: "Michael Wilson", city: "Mumbai", purchases: [{ product_id: 5, purchase_date: new
+Date("2023-05-10"), bill_amount: 60000 }] }
+]);
+Step 3: Queries
+a. List the names of products whose warranty period is one year
+db.products.find({ warranty_period: 1 }).forEach(product => {
+print("Product Name: " + product.name);
+});
+b. List the customers who made purchases on “15/08/2023”
+db.customers.find({ "purchases.purchase_date": new Date("2023-08-15") }).forEach(customer => {
+print("Customer Name: " + customer.name + ", City: " + customer.city);
+});
+c. Display the names of products with the brand which has the highest rating
+var highestRatedBrand = db.brands.find().sort({ average_rating: -1 }).limit(1).toArray()[0];
+db.products.find({ brand_id: highestRatedBrand._id }).forEach(product => {
+print("Product Name: " + product.name + ", Brand: " + highestRatedBrand.name);
+});
+d. Display customers who stay in a specific city and have a bill amount greater than 50000
+var targetCity = "Pune"; // Change this to the desired city
+db.customers.find({
+city: targetCity,
+"purchases.bill_amount": { $gt: 50000 }
+}).forEach(customer => {
+print("Customer Name: " + customer.name + ", City: " + customer.city);
+});

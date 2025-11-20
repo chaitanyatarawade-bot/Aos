@@ -1,0 +1,160 @@
+slip 9
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form action="#" method="post">
+        <h2>Student Registration Form</h2>
+        <label for="fullName">Full Name:</label>
+        <input type="text" id="fullName" name="fullName" required>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="dateOfBirth">Date of Birth:</label>
+        <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+        <label for="course">Select Course:</label>
+        <select id="course" name="course" required>
+            <option value="computerScience">Computer Science</option>
+            <option value="engineering">Engineering</option>
+            <option value="biology">Biology</option>
+            <!-- Add more options as needed -->
+        </select>
+        <label for="searchCollege">Search for College:</label>
+        <input type="search" id="searchCollege" name="searchCollege">
+        <label for="comments">Additional Comments:</label>
+        <textarea id="comments" name="comments" rows="4"></textarea>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
+
+
+
+1. Insert 10 documents in the Customers collection:
+db.customers.insertMany([
+{ _id: 1, name: "Dinesh Patil", address: "Nashik", email: "dinesh@example.com", phone:
+"1234567890" },
+{ _id: 2, name: "Sneha Kulkarni", address: "Pune", email: "sneha@example.com", phone:
+"0987654321" },
+{ _id: 3, name: "Ravi Joshi", address: "Mumbai", email: "ravi@example.com", phone: "1122334455" },
+{ _id: 4, name: "Deepa Patil", address: "Pimpri", email: "deepa@example.com", phone: "2233445566"
+},
+{ _id: 5, name: "Amit Sharma", address: "Nashik", email: "amit@example.com", phone: "3344556677"
+},
+{ _id: 6, name: "Disha Shetty", address: "Nashik", email: "disha@example.com", phone: "4455667788"
+},
+{ _id: 7, name: "Mr. Patil", address: "Pimpri", email: "mrpatil@example.com", phone: "5566778899" },
+{ _id: 8, name: "Suresh Verma", address: "Mumbai", email: "suresh@example.com", phone:
+"6677889900" },
+{ _id: 9, name: "Kiran Singh", address: "Pune", email: "kiran@example.com", phone: "7788990011" },
+{ _id: 10, name: "Deepak Gupta", address: "Pimpri", email: "deepak@example.com", phone:
+"8899001122" }
+]);
+2. Insert 10 documents in the Loans collection:
+db.loans.insertMany([
+{ _id: 1, customer_id: 1, loan_type: "Personal", loan_amount: 150000, city: "Nashik", date_taken: new
+Date("2023-01-15") },
+{ _id: 2, customer_id: 2, loan_type: "Home", loan_amount: 300000, city: "Pune", date_taken: new
+Date("2022-03-10") },
+{ _id: 3, customer_id: 3, loan_type: "Auto", loan_amount: 200000, city: "Mumbai", date_taken: new
+Date("2022-05-22") },
+{ _id: 4, customer_id: 4, loan_type: "Personal", loan_amount: 50000, city: "Pimpri", date_taken: new
+Date("2023-04-01") },
+{ _id: 5, customer_id: 5, loan_type: "Home", loan_amount: 400000, city: "Nashik", date_taken: new
+Date("2021-12-15") },
+{ _id: 6, customer_id: 6, loan_type: "Personal", loan_amount: 75000, city: "Nashik", date_taken: new
+Date("2023-02-11") },
+{ _id: 7, customer_id: 7, loan_type: "Auto", loan_amount: 120000, city: "Pimpri", date_taken: new
+Date("2023-05-20") },
+{ _id: 8, customer_id: 8, loan_type: "Personal", loan_amount: 30000, city: "Mumbai", date_taken: new
+Date("2023-06-30") },
+{ _id: 9, customer_id: 9, loan_type: "Home", loan_amount: 250000, city: "Pune", date_taken: new
+Date("2023-07-14") },
+{ _id: 10, customer_id: 10, loan_type: "Personal", loan_amount: 90000, city: "Pimpri", date_taken:
+new Date("2023-08-05") }
+]);
+Step 3: Queries
+a. List all customers whose name starts with 'D' character
+db.customers.find({ name: { $regex: "^D", $options: "i" } }).forEach(customer => {
+print("Customer Name: " + customer.name);
+});
+b. List the names of customers in descending order who have taken a loan from Pimpri city
+db.customers.aggregate([
+{
+$lookup: {
+from: "loans",
+localField: "_id",
+foreignField: "customer_id",
+as: "loan_info"
+}
+},
+{ $unwind: "$loan_info" },
+{ $match: { "loan_info.city": "Pimpri" } },
+{ $sort: { name: -1 } },
+{ $project: { name: 1 } }
+]).forEach(customer => {
+print("Customer Name: " + customer.name);
+});
+c. Display customer details having the maximum loan amount
+var maxLoan = db.loans.find().sort({ loan_amount: -1 }).limit(1).toArray()[0];
+var customer = db.customers.findOne({ _id: maxLoan.customer_id });
+print("Customer Name: " + customer.name + ", Loan Amount: " + maxLoan.loan_amount + ", Address: "
++ customer.address);
+d. Update the address of the customer whose name is “Mr. Patil” and loan amount is greater than
+100000
+db.customers.updateOne(
+{ name: "Mr. Patil" },
+{ $set: { address: "Updated Address, Pimpri" } },
+{ $currentDate: { lastModified: true } } // Optional: To track when the update was made
+);
+db.loans.updateMany(
+{ customer_id: db.customers.findOne({ name: "Mr. Patil" })._id, loan_amount: { $gt: 100000 } },
+{ $set: { updated: true } } // Optional: If you want to mark the loans as updated
+);

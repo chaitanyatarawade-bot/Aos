@@ -1,0 +1,100 @@
+---------------------------------------------------------------------------  
+slip 25
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Entry Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #b30000;
+            font-size: 18px;
+        }
+        h1 {
+            text-align: center;
+            color: #b30000;
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        .main-container {
+            background-color: #b6dbe8;
+            border: 2px solid #b30000;
+            width: 80%;
+        }
+        .container {
+            width: 60%;
+            margin: auto;
+        }
+        label {
+            display: inline-block;
+            width: 200px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select,
+        input[type="password"] {
+            padding: 5px;
+            width: 250px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 80px;
+        }
+        .buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+        input[type="submit"],
+        input[type="reset"] {
+            padding: 8px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1>ENTRY FORM</h1>
+        <div class="container">
+            <form>
+                <label>Enter your Name :</label>
+                <input type="text"><br>
+                <label>Enter your Age :</label>
+                <input type="number"><br>
+                <label>Enter your Address :</label>
+                <textarea></textarea><br>
+                <label>Sex :</label>
+                <input type="radio" name="gender"> Female
+                <input type="radio" name="gender"> Male<br><br>
+                <label>Nationality :</label>
+                <select>
+                    <option>(Please select a country)</option>
+                    <option>India</option>
+                    <option>USA</option>
+                    <option>UK</option>
+                    <option>Other</option>
+                </select><br><br>
+                <label>Languages Known :</label>
+                (can select more than one)<br>
+                <label></label><input type="checkbox"> C<br>
+                <label></label><input type="checkbox"> C++<br>
+                <label></label><input type="checkbox"> VB<br>
+                <label></label><input type="checkbox"> JAVA<br>
+                <label></label><input type="checkbox"> ASP<br>
+                <label></label><input type="checkbox"> OTHERS<br><br>
+                <label>Enter your Password :</label>
+                <input type="password"><br><br>
+                <div class="buttons">
+                    <input type="reset" value="Reset">
+                    <input type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

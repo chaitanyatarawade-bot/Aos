@@ -1,0 +1,173 @@
+---------------------------------------------------------------------------  
+slip 11
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+        }
+        main {
+            display: flex;
+            flex: 1;
+        }
+        nav {
+            width: 200px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        nav a {
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+        article {
+            flex: 1;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Company Name</h1>
+    </header>
+    <main>
+        <nav>
+            <a href="#" onclick="showDepartment('department1'); return false;">Department 1</a>
+            <a href="#" onclick="showDepartment('department2'); return false;">Department 2</a>
+            <a href="#" onclick="showDepartment('department3'); return false;">Department 3</a>
+            <!-- Add more departments as needed -->
+        </nav>
+        <article id="department-info">
+            <!-- Department information will be displayed here -->
+        </article>
+    </main>
+    <script>
+        function showDepartment(department) {
+            // You can replace the following line with an AJAX request to fetch department information from the server
+            const departmentInfo = getDepartmentInfo(department);
+            // Display department information in the third frame (article)
+            document.getElementById('department-info').innerHTML = departmentInfo;
+        }
+        function getDepartmentInfo(department) {
+            // Simulated department information, replace this with actual data
+            const departmentData = {
+                department1: 'Information for Department 1',
+                department2: 'Information for Department 2',
+                department3: 'Information for Department 3',
+                // Add more departments as needed
+            };
+            return departmentData[department] || 'Department information not available.';
+        }
+    </script>
+</body>
+</html>
+
+
+Products Collection
+product_id: Product ID
+product_name: Product Name
+category: Product Category
+price: Price
+stock_qty: Quantity in stock2. Customers Collection
+cust_id: Customer ID
+cust_name: Customer Name
+city: City
+email: Email
+Products Collection
+{ product_id: 101, product_name: "Laptop", category: "Electronics", price: 50000, stock_qty:
+20 }
+{ product_id: 102, product_name: "Smartphone", category: "Electronics", price: 30000,
+stock_qty: 50 }
+{ product_id: 103, product_name: "Printer", category: "Electronics", price: 15000, stock_qty:
+15 }
+{ product_id: 104, product_name: "Chair", category: "Furniture", price: 5000, stock_qty: 40 }
+{ product_id: 105, product_name: "Desk", category: "Furniture", price: 8000, stock_qty: 30 }
+---
+Customers Collection
+{ cust_id: 201, cust_name: "Mr. Rajiv", city: "Pune", email: "rajiv@gmail.com" }
+{ cust_id: 202, cust_name: "Sneha Patil", city: "Mumbai", email: "sneha@gmail.com" }
+{ cust_id: 203, cust_name: "Rahul Deshmukh", city: "Pune", email: "rahul@gmail.com" }
+{ cust_id: 204, cust_name: "Deepali Joshi", city: "Nashik", email: "deepali@gmail.com" }{ cust_id: 205, cust_name: "Rohit Rane", city: "Pune", email: "rohit@gmail.com" }
+a) List all products in the inventory
+db.products.find({}, { _id:0, product_name:1, category:1, price:1, stock_qty:1 })
+Output:
+{ "product_name": "Laptop", "category": "Electronics", "price": 50000, "stock_qty": 20 }
+{ "product_name": "Smartphone", "category": "Electronics", "price": 30000, "stock_qty": 50
+}
+{ "product_name": "Printer", "category": "Electronics", "price": 15000, "stock_qty": 15 }
+{ "product_name": "Chair", "category": "Furniture", "price": 5000, "stock_qty": 40 }
+{ "product_name": "Desk", "category": "Furniture", "price": 8000, "stock_qty": 30 }
+---
+b) List the details of orders with a value > 20000
+db.orders.find({ order_value: { $gt: 20000 } }, { _id:0 })
+Output:
+{ order_id: 301, cust_id: 201, product_id: 101, order_qty: 1, order_value: 50000, order_date:
+"2023-08-01" }
+{ order_id: 302, cust_id: 202, product_id: 102, order_qty: 2, order_value: 60000, order_date:
+"2023-08-05" }---
+c) List all the orders which have not been processed (invoice not generated)
+db.invoices.aggregate([
+{ $match: { status: "Not Processed" } },
+{ $lookup: {
+from: "orders",
+localField: "order_id",
+foreignField: "order_id",
+as: "order_details"
+}},
+{ $project: { _id:0, order_id:1, order_details:1 } }
+])
+Output:
+{ order_id: 404, order_details: [ { order_id: 304, cust_id: 204, product_id: 104, order_qty: 4,
+order_value: 20000, order_date: "2023-08-10" } ] }
+{ order_id: 405, order_details: [ { order_id: 305, cust_id: 201, product_id: 105, order_qty: 2,
+order_value: 16000, order_date: "2023-08-12" } ] }
+---
+d) List all the orders along with their invoice for “Mr. Rajiv”
+db.customers.aggregate([
+{ $match: { cust_name: "Mr. Rajiv" } },
+{ $lookup: {from: "orders",
+localField: "cust_id",
+foreignField: "cust_id",
+as: "orders"
+}},
+{ $unwind: "$orders" },
+{ $lookup: {
+from: "invoices",
+localField: "orders.order_id",
+foreignField: "order_id",
+as: "invoice"
+}},
+{ $project: { _id:0, cust_name:1, orders:1, invoice:1 } }
+])
+Output:
+{
+"cust_name": "Mr. Rajiv",
+"orders": { "order_id": 301, "cust_id": 201, "product_id": 101, "order_qty": 1,
+"order_value": 50000, "order_date": "2023-08-01" },
+"invoice": [ { "invoice_id": 401, "order_id": 301, "invoice_date": "2023-08-02", "status":
+"Processed" } ]
+} {
+"cust_name": "Mr. Rajiv",
+"orders": { "order_id": 305, "cust_id": 201, "product_id": 105, "order_qty": 2,
+"order_value": 16000, "order_date": "2023-08-12" },
+"invoice": [ { "invoice_id": 405, "order_id": 305, "invoice_date": "", "status": "Not
+Processed" } ]
+}

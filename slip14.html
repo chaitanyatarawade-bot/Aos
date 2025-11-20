@@ -1,0 +1,141 @@
+---------------------------------------------------------------------------  
+slip 14
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Plan Booking Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button[type="reset"] {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <form id="travelForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required>
+        <label for="contact">Contact No.:</label>
+        <input type="tel" id="contact" name="contact" required>
+        <label>Gender:</label>
+        <label for="male">Male</label>
+        <input type="radio" id="male" name="gender" value="male" required>
+        <label for="female">Female</label>
+        <input type="radio" id="female" name="gender" value="female" required>
+        <label for="season">Preferred Season:</label>
+        <label for="spring">Spring</label>
+        <input type="checkbox" id="spring" name="season" value="spring">
+        <label for="summer">Summer</label>
+        <input type="checkbox" id="summer" name="season" value="summer">
+        <label for="autumn">Autumn</label>
+        <input type="checkbox" id="autumn" name="season" value="autumn">
+        <label for="winter">Winter</label>
+        <input type="checkbox" id="winter" name="season" value="winter">
+        <label for="locationType">Location Type:</label>
+        <select id="locationType" name="locationType" required>
+            <option value="" disabled selected>Select Location Type</option>
+            <option value="beach">Beach</option>
+            <option value="mountain">Mountain</option>
+            <option value="city">City</option>
+            <option value="countryside">Countryside</option>
+        </select>
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="submit">Submit</button>
+            <button type="reset">Reset</button>
+        </div>
+    </form>
+    <script>
+        document.getElementById('travelForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+            // You can add code here to handle the form submission, e.g., sending data to a server
+        });
+    </script>
+</body>
+</html>
+
+
+=>
+Create Nodes// Students
+CREATE (s1:Student {name:"Amit", category:"OBC", income:250000}),
+(s2:Student {name:"Riya", category:"GEN", income:400000}),
+(s3:Student {name:"Sahil", category:"OBC", income:200000})
+// Scholarships
+CREATE (sch1:Scholarship {name:"Merit Scholarship", category:"OBC", incomeLimit:300000,
+year:"2020-2021"}),
+(sch2:Scholarship {name:"Talent Scholarship", category:"GEN", incomeLimit:500000,
+year:"2020-2021"}),
+(sch3:Scholarship {name:"Sports Scholarship", category:"OBC", incomeLimit:250000,
+year:"2020-2021"})
+---
+Create Relationships
+// Students apply for scholarships
+CREATE (s1)-[:APPLIED_FOR {year:"2020-2021"}]->(sch1),
+(s1)-[:APPLIED_FOR {year:"2020-2021"}]->(sch3),
+(s2)-[:APPLIED_FOR {year:"2020-2021"}]->(sch2),
+(s3)-[:APPLIED_FOR {year:"2020-2021"}]->(sch1)
+// Students recommend scholarships
+CREATE (s1)-[:RECOMMENDED]->(s2),
+(s3)-[:RECOMMENDED]->(s1)---
+Queries
+a) List the names of scholarships for OBC category
+MATCH (sch:Scholarship)
+WHERE sch.category="OBC"
+RETURN sch.name
+Output:
+"Merit Scholarship"
+"Sports Scholarship"
+---
+b) Count number of students benefitted by a scholarship in 2020-2021
+MATCH (s:Student)-[r:APPLIED_FOR]->(sch:Scholarship)
+WHERE sch.name="Merit Scholarship" AND r.year="2020-2021"
+RETURN count(s) AS no_of_students
+Output:
+2---
+c) Update the income limit for a scholarship
+MATCH (sch:Scholarship {name:"Merit Scholarship"})
+SET sch.incomeLimit = 350000
+RETURN sch.name, sch.incomeLimit
+Output:
+"Merit Scholarship", 350000
+---
+d) List the most popular scholarship
+MATCH (s:Student)-[:APPLIED_FOR]->(sch:Scholarship)
+RETURN sch.name, count(s) AS applicants
+ORDER BY applicants DESC
+LIMIT 1
+Output:
+"Merit Scholarship"

@@ -1,3 +1,49 @@
+slip 2
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Container Example</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Column 1</h5>
+                        <p class="card-text">Content for column 1.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Column 2</h5>
+                        <p class="card-text">Content for column 2.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Column 3</h5>
+                        <p class="card-text">Content for column 3.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS (Optional, for certain components) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
 Q1) 1. Model the system as a document database
 Create three collections:
 Collection: publishers
@@ -12,14 +58,14 @@ sale
 cityIdCollection: cities
 cityName
 state
----
+
+
 2. Attributes assumed (as required)
 City attributes → cityName, state
 Publisher attributes → publisherName, state
 Newspaper attributes → language, sale, publisherId, cityId
----
+
 3. Insert at least 5 documents in each collection
----
 Cities Collection (5 Documents){
 _id: 1,
 cityName: "Nashik",
@@ -67,7 +113,7 @@ _id: 5,publisherName: "Maharashtra Times",
 state: "Maharashtra",
 contact: "9090909090"
 }
----
+
 Newspapers Collection (5 Documents)
 {
 _id: 101,
@@ -104,14 +150,16 @@ publisherId: 5,
 sale: 70000,
 cityId: 3
 }
----
+
+
 Q2). ANSWER THE QUERIES
----(a) List all newspapers available in NASHIK city
+(a) List all newspapers available in NASHIK city
 MongoDB Query
 db.newspapers.find({ cityId: 1 })
 EXACT OUTPUT
 { _id: 101, newspaperName: "Sakal", language: "Marathi", sale: 50000, cityId: 1 }
----
+
+
 (b) List all newspapers of Marathi language
 MongoDB Query
 db.newspapers.find({ language: "Marathi" })
@@ -124,7 +172,7 @@ MongoDB Query
 db.publishers.count({ state: "Gujrat" })
 EXACT OUTPUT
 2
----
+
 (d) Write a cursor to show newspapers with highest sale in Maharashtra state
 MongoDB Cursor
 var cur = db.newspapers.aggregate([
@@ -143,7 +191,7 @@ as: "cityDetails"
 while(cur.hasNext()) {
 printjson(cur.next());
 }
----
+
 EXACT OUTPUT
 {
 _id: 105,

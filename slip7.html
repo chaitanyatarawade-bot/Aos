@@ -1,0 +1,92 @@
+slip 7
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Text Effect</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .three-d-text {
+            font-size: 3em;
+            font-weight: bold;
+            color: #3498db;
+            text-shadow: 4px 4px 0 #2980b9, 7px 7px 0 #2c3e50;
+            transition: transform 0.3s ease-in-out;
+        }
+        .three-d-text:hover {
+            transform: translate(3px, 3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="three-d-text">Hover me!</div>
+</body>
+</html>
+
+
+
+1. Insert 5 documents in the Customers collection:
+db.customers.insertMany([
+{ _id: 1, first_name: "Sanjay", last_name: "Sharma", email: "sanjay@example.com", branch: "Nashik",
+account_ids: [1, 2] },
+{ _id: 2, first_name: "Priya", last_name: "Kumar", email: "priya@example.com", branch: "Nashik",
+account_ids: [3] },
+{ _id: 3, first_name: "Ravi", last_name: "Desai", email: "ravi@example.com", branch: "Mumbai",
+account_ids: [4] },
+{ _id: 4, first_name: "Sneha", last_name: "Patel", email: "sneha@example.com", branch: "Pune",
+account_ids: [5] },
+{ _id: 5, first_name: "Sita", last_name: "Verma", email: "sita@example.com", branch: "Nashik",
+account_ids: [6] }
+]);
+2. Insert 5 documents in the Accounts collection:
+db.accounts.insertMany([
+{ _id: 1, customer_id: 1, account_type: "Saving", balance: 5000, date_opened: new Date("2020-01-
+01") },
+{ _id: 2, customer_id: 1, account_type: "Current", balance: 15000, date_opened: new Date("2021-06-
+15") },
+{ _id: 3, customer_id: 2, account_type: "Saving", balance: 8000, date_opened: new Date("2020-01-
+01") },
+{ _id: 4, customer_id: 3, account_type: "Loan", balance: 200000, date_opened: new Date("2019-05-
+10") },
+{ _id: 5, customer_id: 4, account_type: "Saving", balance: 10000, date_opened: new Date("2020-07-
+20") },
+{ _id: 6, customer_id: 5, account_type: "Saving", balance: 6000, date_opened: new Date("2020-01-
+01") }
+]);
+a. List names of all customers whose first name starts with an “S”
+db.customers.find({ first_name: { $regex: "^S", $options: "i" } }).forEach(customer => {
+print("Customer Name: " + customer.first_name + " " + customer.last_name);
+});
+b. List all customers who opened an account on 1/1/2020 in a specific branch (e.g., "Nashik")
+var specificBranch = "Nashik";
+db.accounts.find({ date_opened: new Date("2020-01-01") }).forEach(account => {
+var customer = db.customers.findOne({ _id: account.customer_id, branch: specificBranch });
+if (customer) {
+print("Customer Name: " + customer.first_name + " " + customer.last_name);
+}
+});
+c. List the names of customers where acctype = “Saving”
+db.accounts.find({ account_type: "Saving" }).forEach(account => {
+var customer = db.customers.findOne({ _id: account.customer_id });
+print("Customer Name: " + customer.first_name + " " + customer.last_name);
+});
+d. Count the total number of loan account holders in a specific branch (e.g., "Nashik")
+var branch = "Nashik";
+var loanAccountHolders = new Set();
+db.accounts.find({ account_type: "Loan" }).forEach(account => {
+var customer = db.customers.findOne({ _id: account.customer_id, branch: branch });
+if (customer) {
+loanAccountHolders.add(customer._id);
+}
+});
+print("Total number of loan account holders in " + branch + ": " + loanAccountHolders.size);

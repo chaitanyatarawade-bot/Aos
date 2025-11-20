@@ -1,0 +1,97 @@
+slip 5
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of Persons</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        th,
+        td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 10px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>List of Persons</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Srno</th>
+                <th>Person Name</th>
+                <th>Age</th>
+                <th>Country</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>John Doe</td>
+                <td>30</td>
+                <td>USA</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Jane Smith</td>
+                <td>25</td>
+                <td>Canada</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Bob Johnson</td>
+                <td>35</td>
+                <td>UK</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
+
+
+
+Q.2) List all names of projects where project_type = "Software"
+Query:
+db.projects.find(
+{ project_type: "Software" },
+{ project_name: 1, _id: 0 })
+Output:
+{ "project_name": "AI System Development" }
+{ "project_name": "Mobile App Upgrade" }
+3) List all projects with duration_months > 3
+Query:
+db.projects.find(
+{ duration_months: { $gt: 3 } },
+{ project_name: 1, duration_months: 1, _id: 0 }
+)
+Output:
+{ "project_name": "AI System Development", "duration_months": 6 }
+{ "project_name": "Mobile App Upgrade", "duration_months": 4 }
+{ "project_name": "Cloud Migration", "duration_months": 5 }
+4) Count number of employees working on "AI System Development"
+Query:
+db.projects.aggregate([
+{ $match: { project_name: "AI System Development" } },
+{ $project: { num_employees: { $size: "$employees" } } }])
+Output:
+{ "num_employees": 3 }
+5.) . List names of projects on which "Mr. Patil" (emp_name = "Rahul Patil") is working
+Step 1: Find Rahul Patil's emp_id
+db.employees.find(
+{ emp_name: "Rahul Patil" },
+{ emp_id: 1, _id: 0 }
+)
+Output:
+{ "emp_id": 101 }

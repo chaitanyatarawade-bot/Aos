@@ -1,0 +1,181 @@
+slip 12
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button[type="reset"] {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <form id="customerRegistrationForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="contactNo">Contact Number:</label>
+        <input type="tel" id="contactNo" name="contactNo" pattern="[0-9]{10}" required>
+        <small>Enter a 10-digit phone number.</small>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+        <label for="preferredDays">Preferred Days of Purchasing:</label>
+        <input type="text" id="preferredDays" name="preferredDays">
+        <label for="favoriteItem">Favorite Item:</label>
+        <select id="favoriteItem" name="favoriteItem">
+            <option value="clothing">Clothing</option>
+            <option value="electronics">Electronics</option>
+            <option value="homeAppliances">Home Appliances</option>
+            <option value="groceries">Groceries</option>
+        </select>
+        <label for="suggestions">Suggestions:</label>
+        <textarea id="suggestions" name="suggestions"></textarea>
+        <button type="submit">Submit</button>
+        <button type="reset">Reset</button>
+    </form>
+</body>
+</html>
+
+
+=>
+Collections and Attributes
+1. Movies Collection
+movie_id: Movie ID
+movie_name: Movie Name
+budget: Budget
+release_year: Release Year
+actors: Array of actor IDs
+2. Actors Collection
+actor_id: Actor ID
+actor_name: Actor Name
+gender: Gender
+dob: Date of Birth
+3. Producers Collectionproducer_id: Producer ID
+producer_name: Producer Name
+movies: Array of movie IDs produced
+---
+Insert Documents
+Movies Collection
+{ movie_id: 101, movie_name: "Action Hero", budget: 50000000, release_year: 2023, actors:
+[201, 202] }
+{ movie_id: 102, movie_name: "Comedy King", budget: 30000000, release_year: 2023,
+actors: [203, 204] }
+{ movie_id: 103, movie_name: "Romantic Saga", budget: 70000000, release_year: 2023,
+actors: [202, 205] }
+{ movie_id: 104, movie_name: "Thriller Night", budget: 70000000, release_year: 2022,
+actors: [201, 203] }
+{ movie_id: 105, movie_name: "Drama Queen", budget: 40000000, release_year: 2023,
+actors: [204, 205] }
+---
+Actors Collection
+{ actor_id: 201, actor_name: "Akshay", gender: "Male", dob: "1980-01-01" }{ actor_id: 202, actor_name: "Salman", gender: "Male", dob: "1975-12-27" }
+{ actor_id: 203, actor_name: "Katrina", gender: "Female", dob: "1983-07-16" }
+{ actor_id: 204, actor_name: "Deepika", gender: "Female", dob: "1986-01-05" }
+{ actor_id: 205, actor_name: "Ranveer", gender: "Male", dob: "1985-07-06" }
+---
+Producers Collection
+{ producer_id: 301, producer_name: "Ramesh", movies: [101, 104] }
+{ producer_id: 302, producer_name: "Suresh", movies: [102, 103] }
+{ producer_id: 303, producer_name: "Mahesh", movies: [103, 105] }
+{ producer_id: 304, producer_name: "Rajesh", movies: [101, 102] }
+{ producer_id: 305, producer_name: "Dinesh", movies: [104, 105] }
+---
+Queries and Solutions
+a) List the names of movies with the highest budget
+db.movies.find().sort({ budget: -1 }).limit(1)
+Output:
+{ "movie_name": "Romantic Saga", "budget": 70000000 }> Note: "Thriller Night" also has the same budget of 70000000.
+---
+b) Display the details of producers who have produced more than one movie in a year
+db.producers.find({
+$where: "this.movies.length > 1"
+})
+Output:
+{ producer_name: "Ramesh", movies: [101, 104] }
+{ producer_name: "Suresh", movies: [102, 103] }
+{ producer_name: "Mahesh", movies: [103, 105] }
+{ producer_name: "Rajesh", movies: [101, 102] }
+{ producer_name: "Dinesh", movies: [104, 105] }
+---
+c) List the names of actors who have acted in at least one movie in which ‘Akshay’ has acted
+// Step 1: Find movies where Akshay acted
+var akshayMovies = db.movies.find({ actors: 201 }).map(m => m.actors).flat();// Step 2: Find all unique actor IDs except Akshay
+var actorIDs = [...new Set(akshayMovies)].filter(id => id !== 201);
+// Step 3: Find actor names
+db.actors.find({ actor_id: { $in: actorIDs } }, { _id:0, actor_name:1 })
+Output:
+{ "actor_name": "Salman" }
+{ "actor_name": "Katrina" }
+---
+d) List the names of movies produced by more than one producer
+// Aggregate by movie_id in producers collection
+db.producers.aggregate([
+{ $unwind: "$movies" },
+{ $group: { _id: "$movies", count: { $sum: 1 } } },
+{ $match: { count: { $gt: 1 } } },
+{ $lookup: {
+from: "movies",
+localField: "_id",
+foreignField: "movie_id",
+as: "movie_details"
+}},
+{ $project: { _id:0, movie_details:1 } }
+])Output:
+{ "movie_details": [ { "movie_name": "Action Hero", "budget": 50000000, "release_year":
+2023, "actors": [201, 202] } ] }
+{ "movie_details": [ { "movie_name": "Comedy King", "budget": 30000000, "release_year":
+2023, "actors": [203, 204] } ] }
+{ "movie_details": [ { "movie_name": "Romantic Saga", "budget": 70000000, "release_year":
+2023, "actors": [202, 205] } ] }
+{ "movie_details": [ { "movie_name": "Thriller Night", "budget": 70000000, "release_year":
+2022, "actors": [201, 203] } ] }
+{ "movie_details": [ { "movie_name": "Drama Queen", "budget": 40000000, "release_year":
+2023, "actors": [204, 205] } ] }
+> All movies in this dataset are produced by more than one producer

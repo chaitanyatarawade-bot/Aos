@@ -1,0 +1,193 @@
+slip 13
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fictional Tech Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+        }
+        nav {
+            background-color: #555;
+            color: #fff;
+            padding: 10px;
+        }
+        nav a {
+            text-decoration: none;
+            color: #fff;
+            margin: 0 15px;
+        }
+        section {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        aside {
+            float: right;
+            width: 30%;
+            padding: 20px;
+            background-color: #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Fictional Tech Product</h1>
+    </header>
+    <nav>
+        <a href="#features">Features</a>
+        <a href="#specs">Specifications</a>
+        <a href="#buy">Buy Now</a>
+    </nav>
+    <section id="features">
+        <h2>Features</h2>
+        <p>This fictional tech product comes with amazing features to enhance your
+            experience.</p>
+        <ul>
+            <li>Wireless Connectivity</li>
+            <li>Long Battery Life</li>
+            <li>High-Resolution Display</li>
+            <li>Advanced Security</li>
+        </ul>
+    </section>
+    <section id="specs">
+        <h2>Specifications</h2>
+        <p>Check out the technical specifications of our product:</p>
+        <ul>
+            <li>Processor: Quad-core, 2.0 GHz</li>
+            <li>Memory: 8 GB RAM</li>
+            <li>Storage: 256 GB SSD</li>
+            <li>Operating System: TechOS</li>
+        </ul>
+    </section>
+    <section id="buy">
+        <h2>Buy Now</h2>
+        <p>Purchase this amazing product today!</p>
+    </section>
+    <aside>
+        <h2>Special Offer</h2>
+        <p>For a limited time, get a 20% discount on your purchase. Use code: TECH20.</p>
+    </aside>
+    <footer>
+        <p>&copy; 2023 Fictional Tech Company | Contact us at info@fictionaltech.com</p>
+    </footer>
+</body>
+</html>
+
+Students Collection
+db.students.insertMany([
+{ student_id: 1, name:"Amit", class:"FY" },{ student_id: 2, name:"Riya", class:"SY" },
+{ student_id: 3, name:"Sahil", class:"FY" },
+{ student_id: 4, name:"Neha", class:"TY" },
+{ student_id: 5, name:"Rohan", class:"FY" },
+{ student_id: 6, name:"Simran", class:"SY" },
+{ student_id: 7, name:"Akshay", class:"FY" },
+{ student_id: 8, name:"Pooja", class:"TY" },
+{ student_id: 9, name:"Vivek", class:"FY" },
+{ student_id: 10, name:"Sneha", class:"SY" }
+])
+---
+2. Competitions Collection
+db.competitions.insertMany([
+{ comp_id: 101, name:"Programming", year:2025 },
+{ comp_id: 102, name:"E-Rangoli", year:2025 },
+{ comp_id: 103, name:"Quiz", year:2025 },
+{ comp_id: 104, name:"Debate", year:2025 },
+{ comp_id: 105, name:"Sports", year:2025 },
+{ comp_id: 106, name:"Painting", year:2025 },
+{ comp_id: 107, name:"Coding Hackathon", year:2025 },
+{ comp_id: 108, name:"Drama", year:2025 },
+{ comp_id: 109, name:"Singing", year:2025 },
+{ comp_id: 110, name:"Dancing", year:2025 }
+])---
+3. Participation Collection
+db.participation.insertMany([
+{ student_id:1, comp_id:101, rank:1 },
+{ student_id:3, comp_id:101, rank:2 },
+{ student_id:5, comp_id:101, rank:3 },
+{ student_id:2, comp_id:102, rank:1 },
+{ student_id:3, comp_id:102, rank:2 },
+{ student_id:7, comp_id:102, rank:3 },
+{ student_id:9, comp_id:102, rank:4 },
+{ student_id:1, comp_id:103, rank:1 },
+{ student_id:4, comp_id:103, rank:2 },
+{ student_id:6, comp_id:103, rank:3 },
+{ student_id:8, comp_id:104, rank:1 },
+{ student_id:10, comp_id:104, rank:2 },
+{ student_id:1, comp_id:105, rank:1 },
+{ student_id:5, comp_id:105, rank:2 },
+{ student_id:9, comp_id:105, rank:3 }
+])
+---
+Queries
+a) Average number of students participating in each competitiondb.participation.aggregate([
+{ $group: { _id:"$comp_id", studentCount: { $sum:1 } } },
+{ $group: { _id:null, avgStudents: { $avg:"$studentCount" } } }
+])
+Output (example):
+{ "avgStudents": 2.7 }
+---
+b) Number of students for Programming competition
+db.participation.aggregate([
+{ $match: { comp_id: 101 } },
+{ $group: { _id:"$comp_id", studentCount: { $sum:1 } } }
+])
+Output:
+{ "_id": 101, "studentCount": 3 }
+---
+c) Names of first three winners of each competitiondb.participation.aggregate([
+{ $match: { rank: { $lte: 3 } } },
+{ $lookup: { from:"students", localField:"student_id", foreignField:"student_id",
+as:"student" } },
+{ $lookup: { from:"competitions", localField:"comp_id", foreignField:"comp_id",
+as:"competition" } },
+{ $project: { _id:0, competition:"$competition.name", student:"$student.name", rank:1 } },
+{ $sort: { "comp_id":1, "rank":1 } }
+])
+Output (example):
+{ "competition":["Programming"], "student":["Amit"], "rank":1 }
+{ "competition":["Programming"], "student":["Sahil"], "rank":2 }
+{ "competition":["Programming"], "student":["Rohan"], "rank":3 }
+{ "competition":["E-Rangoli"], "student":["Riya"], "rank":1 }
+{ "competition":["E-Rangoli"], "student":["Sahil"], "rank":2 }
+{ "competition":["E-Rangoli"], "student":["Akshay"], "rank":3 }
+...
+---
+d) Students from class 'FY' participated in 'E-Rangoli'
+db.participation.aggregate([
+{ $lookup: { from:"students", localField:"student_id", foreignField:"student_id",
+as:"student" } },
+{ $lookup: { from:"competitions", localField:"comp_id", foreignField:"comp_id",
+as:"competition" } },
+{ $unwind:"$student" },{ $unwind:"$competition" },
+{ $match: { "student.class":"FY", "competition.name":"E-Rangoli" } },
+{ $project: { _id:0, student:"$student.name", class:"$student.class",
+competition:"$competition.name" } }
+])
+Output:
+{ "student":"Sahil", "class":"FY", "competition":"E-Rangoli" }
+{ "student":"Akshay", "class":"FY", "competition":"E-Rangoli" }
